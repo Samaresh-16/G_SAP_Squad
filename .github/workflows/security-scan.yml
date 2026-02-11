@@ -1,32 +1,40 @@
-name: SonarCloud Scan
+name: SonarCloud Multi-Language Scan
 
 on:
   push:
     branches:
       - main
+      - develop
   pull_request:
 
 jobs:
-  build:
+  sonarcloud:
     name: Build and Analyze
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      # 1️⃣ Checkout full history (important for PR analysis)
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Set up JDK
+      # 2️⃣ Setup Java (required for Sonar scanner runtime)
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: 17
           distribution: 'temurin'
 
+      # 3️⃣ Cache SonarCloud packages
       - name: Cache SonarCloud packages
         uses: actions/cache@v4
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
 
-      - name: Build and analyze
+      # 4️⃣ Run SonarCloud Scan
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn clean verify sonar:sonar

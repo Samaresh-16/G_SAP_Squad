@@ -11,6 +11,8 @@ jobs:
   sonarcloud:
     name: Build and Analyze
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       # 1️⃣ Checkout full history (important for PR analysis)
